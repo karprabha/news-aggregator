@@ -74,7 +74,7 @@ export default function SearchPage() {
               Enter a search term to find news
             </h3>
             <p className="text-neutral-600 dark:text-neutral-400">
-              Use the search bar above to find articles on topics you're
+              Use the search bar above to find articles on topics you&apos;re
               interested in
             </p>
           </div>

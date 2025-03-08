@@ -23,7 +23,8 @@ export const ArticleGrid = ({ articles, isLoading }: ArticleGridProps) => {
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <h3 className="mb-2 text-xl font-semibold">No articles found</h3>
         <p className="text-neutral-600 dark:text-neutral-400">
-          Try adjusting your search or filters to find what you're looking for.
+          Try adjusting your search or filters to find what you&apos;re looking
+          for.
         </p>
       </div>
     );

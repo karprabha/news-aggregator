@@ -86,7 +86,7 @@ export const UserPreferencesEditor = ({
         <div>
           <h3 className="mb-3 text-lg font-semibold">News Categories</h3>
           <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-400">
-            Select which categories of news you're interested in.
+            Select which categories of news you&apos;re interested in.
           </p>
           <div className="flex flex-wrap gap-3">
             {selectedCategories.map((category) => (

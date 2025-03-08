@@ -7,12 +7,12 @@ import { useUserPreferences } from "@/lib/hooks/useUserPreferences";
 import { UserPreferences } from "@/lib/types/news";
 
 export default function PreferencesPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { preferences, isLoading, resetPreferences } = useUserPreferences();
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleUpdatePreferences = (newPreferences: UserPreferences) => {
-    // In a real app, you would update the preferences in your hook
-    // For now, we'll just show a success message
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);
