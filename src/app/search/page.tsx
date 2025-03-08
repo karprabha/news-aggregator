@@ -6,30 +6,37 @@ import { ArticleGrid } from "@/components/news/ArticleGrid";
 import { SearchBar } from "@/components/news/SearchBar";
 import { NewsFilters } from "@/components/news/NewsFilters";
 import { Article, SearchFilters as SearchFiltersType } from "@/lib/types/news";
-import { getTopHeadlinesFromAllSources } from "@/lib/api/newsService";
+import { searchAllSources } from "@/lib/api/newsService";
 import { useUserPreferences } from "@/lib/hooks/useUserPreferences";
 
-export default function Home() {
+export default function SearchPage() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState<SearchFiltersType>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [filters, setFilters] = useState<SearchFiltersType>({
+    keyword: "",
+  });
   const { preferences } = useUserPreferences();
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getTopHeadlinesFromAllSources(preferences, filters);
-        setArticles(data);
-      } catch (error) {
-        console.error("Failed to fetch articles:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Only search when there's a keyword
+    if (filters.keyword) {
+      const searchArticles = async () => {
+        setIsLoading(true);
+        try {
+          const data = await searchAllSources(filters, preferences);
+          setArticles(data);
+          setHasSearched(true);
+        } catch (error) {
+          console.error("Failed to search articles:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    fetchArticles();
-  }, [preferences, filters]);
+      searchArticles();
+    }
+  }, [filters, preferences]);
 
   const handleSearch = (newFilters: SearchFiltersType) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -43,9 +50,9 @@ export default function Home() {
     <MainLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="mb-2 text-3xl font-bold">Top Headlines</h1>
+          <h1 className="mb-2 text-3xl font-bold">Search News</h1>
           <p className="text-neutral-600 dark:text-neutral-400">
-            Stay informed with the latest news from trusted sources
+            Search for news articles across multiple sources
           </p>
         </div>
 
@@ -61,7 +68,19 @@ export default function Home() {
           </div>
         </div>
 
-        <ArticleGrid articles={articles} isLoading={isLoading} />
+        {!hasSearched && !isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <h3 className="mb-2 text-xl font-semibold">
+              Enter a search term to find news
+            </h3>
+            <p className="text-neutral-600 dark:text-neutral-400">
+              Use the search bar above to find articles on topics you're
+              interested in
+            </p>
+          </div>
+        ) : (
+          <ArticleGrid articles={articles} isLoading={isLoading} />
+        )}
       </div>
     </MainLayout>
   );
