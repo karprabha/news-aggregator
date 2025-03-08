@@ -5,25 +5,54 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { UserPreferencesEditor } from "@/components/news/UserPreferencesEditor";
 import { useUserPreferences } from "@/lib/hooks/useUserPreferences";
 import { UserPreferences } from "@/lib/types/news";
+import { useRouter } from "next/navigation";
 
 export default function PreferencesPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { preferences, isLoading, resetPreferences } = useUserPreferences();
+  const { preferences, isLoading, toggleSource, toggleCategory } =
+    useUserPreferences();
   const [showSuccess, setShowSuccess] = useState(false);
+  const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleUpdatePreferences = (newPreferences: UserPreferences) => {
+    // Update sources
+    newPreferences.sources.forEach((newSource) => {
+      const currentSource = preferences.sources.find(
+        (s) => s.id === newSource.id
+      );
+      if (currentSource && currentSource.enabled !== newSource.enabled) {
+        toggleSource(newSource.id);
+      }
+    });
+
+    // Update categories
+    newPreferences.categories.forEach((newCategory) => {
+      const currentCategory = preferences.categories.find(
+        (c) => c.id === newCategory.id
+      );
+      if (currentCategory && currentCategory.enabled !== newCategory.enabled) {
+        toggleCategory(newCategory.id);
+      }
+    });
+
+    // Show success message
     setShowSuccess(true);
+
+    // Hide success message after 3 seconds
     setTimeout(() => {
       setShowSuccess(false);
     }, 3000);
   };
 
+  const handleViewPersonalizedFeed = () => {
+    router.push("/");
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-300 border-t-neutral-800"></div>
+        <div className="min-h-screen animate-pulse p-4">
+          <div className="h-8 w-1/3 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+          <div className="mt-4 h-64 rounded bg-neutral-200 dark:bg-neutral-700"></div>
         </div>
       </MainLayout>
     );
@@ -31,36 +60,53 @@ export default function PreferencesPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="mb-2 text-3xl font-bold">Preferences</h1>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="mb-2 text-3xl font-bold">News Preferences</h1>
           <p className="text-neutral-600 dark:text-neutral-400">
-            Customize your news feed to see the content that matters to you
+            Customize your news feed by selecting your preferred sources and
+            categories
           </p>
         </div>
 
         {showSuccess && (
-          <div className="rounded-md bg-green-50 p-4 dark:bg-green-900">
+          <div className="mb-6 rounded-md bg-green-50 p-4 dark:bg-green-900/20">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-green-400"
-                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-green-400 dark:text-green-500"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
                     clipRule="evenodd"
                   />
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                  Your preferences have been saved successfully!
-                </p>
+                <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
+                  Preferences updated
+                </h3>
+                <div className="mt-2 text-sm text-green-700 dark:text-green-300">
+                  <p>
+                    Your news preferences have been updated successfully. Your
+                    news feed will now reflect these changes.
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <div className="-mx-2 -my-1.5 flex">
+                    <button
+                      type="button"
+                      onClick={handleViewPersonalizedFeed}
+                      className="rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:bg-green-900/30 dark:text-green-200 dark:hover:bg-green-900/50"
+                    >
+                      View your personalized feed
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

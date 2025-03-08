@@ -34,16 +34,34 @@ export const getTopHeadlinesFromAllSources = async (
   filters?: SearchFilters
 ): Promise<Article[]> => {
   const sourcesToUse = preferences?.sources || defaultSources;
+  const categoriesToUse = preferences?.categories || defaultCategories;
+  const authorsToUse = preferences?.authors || [];
 
   // Use only enabled sources
   const enabledSourceIds = sourcesToUse
     .filter((source) => source.enabled)
     .map((source) => source.id);
 
-  // Apply source filters based on preferences
+  // Use only enabled categories
+  const enabledCategoryIds = categoriesToUse
+    .filter((category) => category.enabled)
+    .map((category) => category.id);
+
+  // Use only enabled authors
+  const enabledAuthorIds = authorsToUse
+    .filter((author) => author.enabled)
+    .map((author) => author.id);
+
+  // Apply filters based on preferences
   const sourceFilters: SearchFilters = {
     ...filters,
     sources: filters?.sources || enabledSourceIds,
+    categories:
+      filters?.categories ||
+      (enabledCategoryIds.length > 0 ? enabledCategoryIds : undefined),
+    authors:
+      filters?.authors ||
+      (enabledAuthorIds.length > 0 ? enabledAuthorIds : undefined),
   };
 
   // Parallel fetch from all enabled sources
@@ -65,12 +83,31 @@ export const getTopHeadlinesFromAllSources = async (
     const results = await Promise.all(promises);
 
     // Combine results from all sources
-    return results.flat().sort((a, b) => {
+    let combinedResults = results.flat().sort((a, b) => {
       // Sort by publication date (newest first)
       return (
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
       );
     });
+
+    // Filter by category if specified
+    if (enabledCategoryIds.length > 0) {
+      combinedResults = combinedResults.filter(
+        (article) =>
+          !article.category ||
+          enabledCategoryIds.includes(article.category.toLowerCase())
+      );
+    }
+
+    // Filter by author if specified
+    if (enabledAuthorIds.length > 0) {
+      combinedResults = combinedResults.filter(
+        (article) =>
+          !article.author || enabledAuthorIds.includes(article.author)
+      );
+    }
+
+    return combinedResults;
   } catch (error) {
     console.error("Error fetching top headlines:", error);
     return [];
@@ -83,16 +120,34 @@ export const searchAllSources = async (
   preferences?: UserPreferences
 ): Promise<Article[]> => {
   const sourcesToUse = preferences?.sources || defaultSources;
+  const categoriesToUse = preferences?.categories || defaultCategories;
+  const authorsToUse = preferences?.authors || [];
 
   // Use only enabled sources
   const enabledSourceIds = sourcesToUse
     .filter((source) => source.enabled)
     .map((source) => source.id);
 
-  // Apply source filters based on preferences
+  // Use only enabled categories
+  const enabledCategoryIds = categoriesToUse
+    .filter((category) => category.enabled)
+    .map((category) => category.id);
+
+  // Use only enabled authors
+  const enabledAuthorIds = authorsToUse
+    .filter((author) => author.enabled)
+    .map((author) => author.id);
+
+  // Apply filters based on preferences
   const sourceFilters: SearchFilters = {
     ...filters,
     sources: filters.sources || enabledSourceIds,
+    categories:
+      filters.categories ||
+      (enabledCategoryIds.length > 0 ? enabledCategoryIds : undefined),
+    authors:
+      filters.authors ||
+      (enabledAuthorIds.length > 0 ? enabledAuthorIds : undefined),
   };
 
   // Parallel fetch from all enabled sources
@@ -114,12 +169,31 @@ export const searchAllSources = async (
     const results = await Promise.all(promises);
 
     // Combine results from all sources
-    return results.flat().sort((a, b) => {
+    let combinedResults = results.flat().sort((a, b) => {
       // Sort by publication date (newest first)
       return (
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
       );
     });
+
+    // Filter by category if specified
+    if (enabledCategoryIds.length > 0 && !filters.categories) {
+      combinedResults = combinedResults.filter(
+        (article) =>
+          !article.category ||
+          enabledCategoryIds.includes(article.category.toLowerCase())
+      );
+    }
+
+    // Filter by author if specified
+    if (enabledAuthorIds.length > 0 && !filters.authors) {
+      combinedResults = combinedResults.filter(
+        (article) =>
+          !article.author || enabledAuthorIds.includes(article.author)
+      );
+    }
+
+    return combinedResults;
   } catch (error) {
     console.error("Error searching articles:", error);
     return [];
