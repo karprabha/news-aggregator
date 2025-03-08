@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const NYT_API_KEY = process.env.NEXT_PUBLIC_NYT_API_KEY || "";
+const NYT_API_KEY = process.env.NYT_API_KEY || "";
 const NYT_API_BASE_URL = "https://api.nytimes.com/svc";
 
 export async function GET(request: NextRequest) {

@@ -32,9 +32,9 @@ A modern news aggregator application that pulls articles from multiple sources a
 Create a `.env.local` file in the root directory with the following variables:
 
 ```
-NEXT_PUBLIC_NEWS_API_KEY=your_newsapi_key
-NEXT_PUBLIC_GUARDIAN_API_KEY=your_guardian_api_key
-NEXT_PUBLIC_NYT_API_KEY=your_nyt_api_key
+NEWS_API_KEY=your_newsapi_key
+GUARDIAN_API_KEY=your_guardian_api_key
+NYT_API_KEY=your_nyt_api_key
 ```
 
 ### Installation

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const GUARDIAN_API_KEY = process.env.NEXT_PUBLIC_GUARDIAN_API_KEY || "";
+const GUARDIAN_API_KEY = process.env.GUARDIAN_API_KEY || "";
 const GUARDIAN_API_BASE_URL = "https://content.guardianapis.com";
 
 export async function GET(request: NextRequest) {
